@@ -176,6 +176,7 @@ fn main() {
                     }
                 }
             }
+            println!("{:?}", a);
             t1.build(&a, 1, 0, max_x as usize);
             let mut res = vec![];
             // Leggi tutte le righe rimanenti
