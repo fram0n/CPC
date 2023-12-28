@@ -27,57 +27,47 @@ fn main() {
             n = numbers[0].parse::<usize>().unwrap();
             d = numbers[1].parse::<usize>().unwrap();
 
-            // we must build a vector of size n*D containing pairs (weight, value)
+            // we must build a vector of size n*D containing the values of the cities
             // for each city, since the i-th day can be visited iff all the (i-1) days were visited,
-            // we build D values for each city which contains the pair (weight=day number, value=sum of the values up to the i-th day of that city)
-            let mut values: Vec<(i32, i32, i32)> = Vec::new();
-            let mut city = 0;
+            // we build D values for each city which contains the value=sum of the values up to the i-th day of that city
+            let mut values: Vec<i32> = Vec::new();
             //read the remaining lines and fill the values vector
             for line in reader.lines() {
                 if let Ok(line_content) = line {
                     let line_numbers: Vec<&str> = line_content.split_whitespace().collect();
-                    let mut weight_sum = 1;
                     let mut value_sum = 0;
                     for v in 0..d {
-                        value_sum += line_numbers[v].parse::<i32>().unwrap();
-                        if v == 0 { //first value has weight 1
-                            values.push((1, value_sum, city));
-                        }
-                        else {
-                            values.push((weight_sum, value_sum, city));
-                        }
-                        weight_sum += 1;
+                        value_sum = value_sum + line_numbers[v].parse::<i32>().unwrap();
+                        values.push(value_sum);
                     }
-                    city += 1;
                 } else {
                     eprintln!("Error on the reading of a line");
                     std::process::exit(1);
                 }
             }
-            // sort the values vector by increasing weight
-            values.sort_by(|a, b| a.0.cmp(&b.0));
-             println!("{:?}", values);
+            // println!("{:?}", values);
             let res = holiday_planning(n, d, values);
-            println!("{:?}", res);
-            println!("");
+            // println!("{:?}", res);
+            // println!("");
             // check if the results correspond to the value in the output file
-            // let file_out = match fs::File::open(output_file) {
-            //     Ok(file_out) => file_out,
-            //     Err(e) => {
-            //         eprintln!("Error opening file: {}", e);
-            //         std::process::exit(1);
-            //     }
-            // };
-            // let mut reader = io::BufReader::new(file_out);
-            // if let Ok(line_content) = reader.by_ref().lines().next().unwrap() {
-            //     if line_content.parse::<i32>().unwrap() != res {
-            //         println!("Test{}: wrong, result must be {} but is {}", i, line_content.parse::<usize>().unwrap(), res);
-            //         return;
-            //     }
-            // }
-            // println!("Test{}: ok", i);
+            let file_out = match fs::File::open(output_file) {
+                Ok(file_out) => file_out,
+                Err(e) => {
+                    eprintln!("Error opening file: {}", e);
+                    std::process::exit(1);
+                }
+            };
+            let mut reader = io::BufReader::new(file_out);
+            if let Ok(line_content) = reader.by_ref().lines().next().unwrap() {
+                if line_content.parse::<i32>().unwrap() != res {
+                    println!("Test{}: wrong, result must be {} but is {}", i, line_content.parse::<usize>().unwrap(), res);
+                    return;
+                }
+            }
+            println!("Test{}: ok", i);
         }
     }
+    println!("");
 /* --------------------------------------------------- PROBLEM 2 --------------------------------------------------- */
     let folder_path = "TestSet 2";
     let mut n: usize;

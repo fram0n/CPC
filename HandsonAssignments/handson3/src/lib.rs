@@ -1,29 +1,26 @@
 use std::cmp;
 
-pub fn holiday_planning(n:usize, d: usize, values: Vec<(i32, i32, i32)>) -> i32 {
-    // create a matrix with n*d+1 rows and d+1 columns
-    let mut matrix: Vec<Vec<i32>> = vec!(vec!(-1; d+1); n*d+1);
-    for i in 0..n*d+1 {
+pub fn holiday_planning(n:usize, d: usize, values: Vec<i32>) -> i32 {
+    // create a matrix with n+1 rows and d+1 columns
+    let mut matrix: Vec<Vec<i32>> = vec!(vec!(-1; d+1); n+1);
+    for i in 0..n+1 {
         for j in 0..d+1 {
-            if i == 0 || j == 0 {   //base case
+            if i == 0 || j == 0{   //base case
                 matrix[i][j] = 0;
             }
-            else if j as i32 - values[i-1].0 >= 0 {
-                    let (weight, value, _) = values[i - 1];
-                    if i-1 > n && matrix[i-n][j - weight as usize] == matrix[i-1][j - weight as usize] && values[i-1-n].1 != values[i-n].1 {
-                        matrix[i][j] = cmp::max(value, matrix[i-1][j]);
-                    }
-                    else {
-                        matrix[i][j] = cmp::max(value + matrix[i-1][j - weight as usize], matrix[i-1][j]);
-                    }
-            }
             else {
-                matrix[i][j] = matrix[i-1][j];
+                let mut max = 0;
+                let mut day: i32 = 1;
+                while j as i32 - day >= 0  && day < (d+1).try_into().unwrap() {
+                    max = cmp::max(max, matrix[i-1][j - day as usize] + values[day as usize - 1 + (i-1)*d]);
+                    day += 1;
+                }
+                matrix[i][j] = cmp::max(max, matrix[i-1][j]);
             }
         }
     }
-    //println!("{:?}", matrix);
-    return matrix[n*d][d];
+    // println!("{:?}", matrix);
+    return matrix[n][d];
 }
 
 pub fn design_course(n:usize, mut values: Vec<(i32, i32)>) -> usize {
